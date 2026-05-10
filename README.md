@@ -2,49 +2,38 @@
 
 > 🤖 A collection of reusable agent skills, rules, and workflows for Cursor and Claude Code, organized by domain (engineering, writing, meta, personal).
 
-Skills today; rules, hooks, and subagents tomorrow. Tool-agnostic — works with both Cursor and Claude Code via flat symlinks into `~/.agents/skills/`.
+Skills today; rules, hooks, and subagents tomorrow.
 
-## Layout
+## Domains
 
-```
-agent-config/
-├── README.md
-├── LICENSE
-├── TEMPLATE.md         # copy-this example skill
-├── install.sh          # symlinks skills into ~/.agents/skills/
-└── skills/
-    ├── engineering/    # code, architecture, dev workflow
-    ├── writing/        # PRDs, issues, docs, prose
-    ├── meta/           # how-you-work skills (grill-me, find-skills, ...)
-    └── personal/       # life stuff (finance, journaling, health, ...)
-```
+Skills are grouped by domain — purely organizational. Tools never see the domain layer; `install.sh` flattens it.
 
-The folders under `skills/` are **domains** — purely organizational. Tools never see the domain layer; `install.sh` flattens it.
+- **engineering** — code, architecture, dev workflow
+- **writing** — PRDs, issues, docs, prose
+- **meta** — skill authoring, planning, decision-making
+- **personal** — life stuff (finance, journaling, health)
 
-## How it works
+Each skill lives at `skills/<domain>/<skill-name>/SKILL.md`, optionally with supporting files alongside.
 
-Skills live in this repo at `skills/<domain>/<skill-name>/SKILL.md`.
-
-`install.sh` creates symlinks so every skill ends up at `~/.agents/skills/<skill-name>/`, regardless of domain. From there, your existing `~/.claude/skills/` and `~/.cursor/skills/` symlinks pick them up automatically.
-
-```
-agent-config/skills/engineering/foo/SKILL.md
-        ↓ install.sh
-~/.agents/skills/foo  →  ../../Projects/personal/agent-config/skills/engineering/foo
-        ↓ existing setup
-~/.claude/skills/foo  →  ../../.agents/skills/foo
-~/.cursor/skills/foo  →  ../../.agents/skills/foo
-```
-
-## Install
+## Quick start
 
 ```sh
-git clone https://github.com/<you>/agent-config.git ~/Projects/personal/agent-config
-cd ~/Projects/personal/agent-config
+git clone https://github.com/johnnyghost/agent-config.git
+cd agent-config
 ./install.sh
 ```
 
-Re-run `./install.sh` after `git pull` to pick up new skills. It's idempotent.
+`install.sh` symlinks every skill into the agent skills directories that exist on your machine — `~/.cursor/skills/` and `~/.claude/skills/` by default. Re-run after `git pull` to pick up new skills; it's idempotent.
+
+Override with one or more `--target` flags:
+
+```sh
+./install.sh --target ~/.cursor/skills          # one tool only
+./install.sh --target ~/.agents/skills          # a custom hub
+./install.sh --target ~/.cursor/skills --target ~/.claude/skills --force
+```
+
+Other options: `--dry-run` shows what would happen without changing anything, `--force` overwrites existing symlinks at the target.
 
 ## Adding a skill
 
@@ -59,8 +48,34 @@ Skill names must be unique across all domains — `install.sh` will fail loudly 
 
 - One folder per skill: `skills/<domain>/<skill-name>/SKILL.md`.
 - Frontmatter follows the schema in `TEMPLATE.md` (`name`, `description`, `license`, `metadata.author`, `metadata.version`).
-- `description` should clearly state when the skill triggers — agents use it to decide whether to invoke the skill.
-- Keep skills self-contained. Supporting files (scripts, references) live alongside `SKILL.md` in the same folder.
+- `description` is the most important field — agents match it against user intent. Be specific about when the skill should trigger.
+- Keep skills self-contained. Supporting files (scripts, references, examples) live alongside `SKILL.md` in the same folder.
+
+## How I use it
+
+This is my personal setup, documented in case it's useful — not required.
+
+I keep a single source-of-truth hub at `~/.agents/skills/` and symlink the tool-specific dirs into it, so every Cursor and Claude Code session reads from one place:
+
+```
+~/.cursor/skills/<skill>  →  ~/.agents/skills/<skill>
+~/.claude/skills/<skill>  →  ~/.agents/skills/<skill>
+                                    ↑
+                          ./install.sh --target ~/.agents/skills
+                                    ↑
+                  agent-config/skills/<domain>/<skill>/SKILL.md
+```
+
+To replicate it:
+
+```sh
+mkdir -p ~/.agents/skills
+ln -s ~/.agents/skills ~/.cursor/skills    # only if ~/.cursor/skills doesn't already exist
+ln -s ~/.agents/skills ~/.claude/skills    # only if ~/.claude/skills doesn't already exist
+./install.sh --target ~/.agents/skills
+```
+
+Trade-off: one symlink hop more, but every tool instantly sees every skill, and uninstalling/moving skills is one-place work.
 
 ## License
 
