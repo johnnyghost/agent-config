@@ -1,81 +1,33 @@
 # agent-config
 
-> 🤖 A collection of reusable agent skills, rules, and workflows for Cursor and Claude Code, organized by domain (engineering, writing, meta, personal).
+> Portable, version-controlled **agent skills** (and eventually rules, hooks, and workflows) for **Cursor** and **Claude Code** — one place to define how assistants should behave on recurring tasks, then symlink that behavior into each tool.
 
-Skills today; rules, hooks, and subagents tomorrow.
+If you have ever duplicated the same long prompt or checklist across projects, this repo is the opposite: small, focused **skill** folders with frontmatter agents use to decide *when* to follow *which* instructions. You edit markdown in git; `install.sh` wires the skills into `~/.cursor/skills`, `~/.claude/skills`, or a directory you choose.
 
-## Domains
+**Roadmap:** skills today; rules, hooks, and subagents tomorrow.
 
-Skills are grouped by domain — purely organizational. Tools never see the domain layer; `install.sh` flattens it.
+## What you get
 
-- **engineering** — code, architecture, dev workflow
-- **writing** — PRDs, issues, docs, prose
-- **meta** — skill authoring, planning, decision-making
-- **personal** — life stuff (finance, journaling, health)
+| Piece | Role |
+|--------|------|
+| [`skills/`](./skills/) | Source-of-truth skill trees grouped by domain (`engineering`, `writing`, `meta`, `personal`). Each skill is a folder with `SKILL.md` and optional helpers. |
+| [`install.sh`](./install.sh) | Idempotent symlinks from the repo into your agent skills dirs — safe to re-run after `git pull`. |
+| [`TEMPLATE.md`](./TEMPLATE.md) | Copy-paste starting point for new skills (frontmatter schema + structure). |
 
-Each skill lives at `skills/<domain>/<skill-name>/SKILL.md`, optionally with supporting files alongside.
+Skills are **flat to the tools**: domain folders are only for humans in the repo; installers expose a single namespace per skill name.
 
-## Quick start
+## Skills in this repo (examples)
 
-```sh
-git clone https://github.com/johnnyghost/agent-config.git
-cd agent-config
-./install.sh
-```
+| Skill | Domain | Summary |
+|--------|--------|---------|
+| [review-pr](./skills/engineering/review-pr/SKILL.md) | engineering | Peer review of someone else's checked-out branch — structured severity report, not style nits. |
+| [pre-ship-review](./skills/engineering/pre-ship-review/SKILL.md) | engineering | Self-review and pre-ship checklist on *your* diff before you open or merge a PR. |
 
-`install.sh` symlinks every skill into the agent skills directories that exist on your machine — `~/.cursor/skills/` and `~/.claude/skills/` by default. Re-run after `git pull` to pick up new skills; it's idempotent.
+More domains have placeholders for future skills; see [`skills/README.md`](./skills/README.md) for the full domain list and layout.
 
-Override with one or more `--target` flags:
+## Getting started
 
-```sh
-./install.sh --target ~/.cursor/skills          # one tool only
-./install.sh --target ~/.agents/skills          # a custom hub
-./install.sh --target ~/.cursor/skills --target ~/.claude/skills --force
-```
-
-Other options: `--dry-run` shows what would happen without changing anything, `--force` overwrites existing symlinks at the target.
-
-## Adding a skill
-
-1. Pick a domain (`engineering`, `writing`, `meta`, `personal`).
-2. Copy `TEMPLATE.md` to `skills/<domain>/<skill-name>/SKILL.md`.
-3. Edit the frontmatter and body.
-4. Run `./install.sh`.
-
-Skill names must be unique across all domains — `install.sh` will fail loudly on collisions, because tools see them flat.
-
-## Conventions
-
-- One folder per skill: `skills/<domain>/<skill-name>/SKILL.md`.
-- Frontmatter follows the schema in `TEMPLATE.md` (`name`, `description`, `license`, `metadata.author`, `metadata.version`).
-- `description` is the most important field — agents match it against user intent. Be specific about when the skill should trigger.
-- Keep skills self-contained. Supporting files (scripts, references, examples) live alongside `SKILL.md` in the same folder.
-
-## How I use it
-
-This is my personal setup, documented in case it's useful — not required.
-
-I keep a single source-of-truth hub at `~/.agents/skills/` and symlink the tool-specific dirs into it, so every Cursor and Claude Code session reads from one place:
-
-```
-~/.cursor/skills/<skill>  →  ~/.agents/skills/<skill>
-~/.claude/skills/<skill>  →  ~/.agents/skills/<skill>
-                                    ↑
-                          ./install.sh --target ~/.agents/skills
-                                    ↑
-                  agent-config/skills/<domain>/<skill>/SKILL.md
-```
-
-To replicate it:
-
-```sh
-mkdir -p ~/.agents/skills
-ln -s ~/.agents/skills ~/.cursor/skills    # only if ~/.cursor/skills doesn't already exist
-ln -s ~/.agents/skills ~/.claude/skills    # only if ~/.claude/skills doesn't already exist
-./install.sh --target ~/.agents/skills
-```
-
-Trade-off: one symlink hop more, but every tool instantly sees every skill, and uninstalling/moving skills is one-place work.
+Clone the repo, run `./install.sh`, and your existing Cursor and/or Claude skills directories (when present) get symlinks to every skill here. Overrides, dry runs, and a **single shared hub** layout are documented in **[skills/README.md](./skills/README.md)** — including how to add a skill and naming conventions.
 
 ## License
 
