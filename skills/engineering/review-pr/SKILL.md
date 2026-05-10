@@ -1,6 +1,6 @@
 ---
 name: review-pr
-description: Peer-review a teammate's checked-out branch as a thorough reviewer. Use when the user has someone else's PR or branch checked out locally and asks to "review this PR", "review this diff", "do a code review", or "check this branch before I approve". Runs `git diff <base>...HEAD` and surfaces six classes of issue — API/interface design, logic bugs in new code, missing edge cases & error paths, security concerns, regressions to existing behavior, and architecture/coupling problems. Explicitly ignores code style, performance, naming nits, missing tests, missing docs, and bikeshed-able preferences. Produces a severity-tagged markdown report (must-fix / consider / question) grouped by file plus a mechanical verdict (request-changes / comment / approve). Do NOT use for self-review of the user's own changes — use react-doctor or a self-review skill instead.
+description: Peer-review a teammate's checked-out branch as a thorough reviewer. Use when the user has someone else's PR or branch checked out locally and asks to "review this PR", "review this diff", "do a code review", or "check this branch before I approve". Runs `git diff <base>...HEAD` and surfaces six classes of issue — API/interface design, logic bugs in new code, missing edge cases & error paths, security concerns, regressions to existing behavior, and architecture/coupling problems. Explicitly ignores code style, performance, naming nits, missing tests, missing docs, and bikeshed-able preferences. Produces a severity-tagged markdown report (must-fix / consider / question) grouped by file plus a mechanical verdict (request-changes / comment / approve). Do NOT use for self-review of the user's own changes — use `pre-ship-review` (or `react-doctor` for a React-focused pass).
 license: MIT
 metadata:
   author: joaohenriques
@@ -19,7 +19,7 @@ Two-pass peer review of a teammate's checked-out branch. Surfaces design and cor
 
 ## When NOT to use
 
-- User is reviewing their **own** changes — use `react-doctor` or a self-review skill instead.
+- User is reviewing their **own** changes — use `pre-ship-review` (or `react-doctor` for React-only follow-up).
 - User wants a style/format/lint pass — that's the linter's job.
 - User wants a dedicated security audit — this skill flags **obvious** security issues but is not a security review.
 - User wants a performance investigation — out of scope; use a perf-focused skill.
