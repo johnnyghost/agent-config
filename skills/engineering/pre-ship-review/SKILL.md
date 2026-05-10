@@ -145,13 +145,6 @@ Use this structure exactly:
 
 Sort findings by file path, then by start line. If there are **no** Section 2 findings, still include the verdict line and explain that Section 2 is clean.
 
-## Canonical copy vs personal install
+## Install
 
-The **canonical** skill directory for this repo is `skills/engineering/pre-ship-review/`. To use it globally in Cursor, symlink it into your personal skills directory (Cursor resolves `~/.cursor/skills/<name>/`):
-
-```bash
-mkdir -p ~/.cursor/skills
-ln -sf "/Users/joaohenriques/Projects/personal/agent-config/skills/engineering/pre-ship-review" ~/.cursor/skills/pre-ship-review
-```
-
-On another machine, replace the source path with the absolute path to your clone of this repository.
+Canonical path in this repo: `skills/engineering/pre-ship-review/`. From the **repository root**, run `./install.sh` to symlink every skill (flattened by skill name) into the default targets such as `~/.cursor/skills/` — see the repo `README.md` for options and `--target`.
