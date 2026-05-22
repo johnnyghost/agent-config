@@ -22,6 +22,7 @@ Skills are **flat to the tools**: domain folders are only for humans in the repo
 |--------|--------|---------|
 | [review-pr](./skills/engineering/review-pr/SKILL.md) | engineering | Peer review of someone else's checked-out branch — structured severity report, not style nits. |
 | [pre-ship-review](./skills/engineering/pre-ship-review/SKILL.md) | engineering | Self-review and pre-ship checklist on *your* diff before you open or merge a PR. |
+| [address-pr-comments](./skills/engineering/address-pr-comments/SKILL.md) | engineering | Triage and fix unresolved review threads on *your* PR — commit, push, reply, resolve. |
 
 More domains have placeholders for future skills; see [`skills/README.md`](./skills/README.md) for the full domain list and layout.
 
